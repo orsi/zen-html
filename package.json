@@ -4,7 +4,8 @@
   "description": "An enlightened html template library.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "webpack-dev-server"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/jorsi/zen-html/issues"
   },
-  "homepage": "https://github.com/jorsi/zen-html#readme"
+  "homepage": "https://github.com/jorsi/zen-html#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "ts-loader": "^5.3.1",
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.2.1",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  }
 }
