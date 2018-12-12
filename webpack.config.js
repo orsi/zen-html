@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = {
-    mode: "development",
+    mode: 'development',
     entry: './src/index.ts',
     devtool: 'inline-source-map',
     module: {
@@ -18,14 +18,12 @@ module.exports = {
     },
     output: {
         filename: 'index.js',
-        path: path.join(__dirname, 'dist'),
-        publicPath: '/lib/'
+        path: path.join(__dirname, 'dist')
     },
     devServer: {
-        contentBase: path.join(__dirname, "test"),
         watchContentBase: true,
-        compress: true,
         open: 'Chrome',
+        openPage: 'test/index.html',
         port: 9000
     }
 };

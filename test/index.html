@@ -1,9 +1,19 @@
-<!doctype html>
 <html>
-  <head>
-  </head>
-  <body>
-    <zen-test-element></zen-test-element>
-    <script src="/lib/index.js"></script>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link href="/node_modules/mocha/mocha.css" rel="stylesheet" />
+  <!-- make chai and mocha globally available -->
+  <script src="/node_modules/mocha/mocha.js"></script>
+</head>
+
+<body>
+  <div id="mocha"></div>
+
+  <!-- setup and run tests -->
+  <script type="module" src="setup.js"></script>
+  <script type="module" src="run.js"></script>
+</body>
+
 </html>

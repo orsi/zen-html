@@ -17,11 +17,16 @@
     "url": "https://github.com/jorsi/zen-html/issues"
   },
   "homepage": "https://github.com/jorsi/zen-html#readme",
-  "dependencies": {},
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "@webcomponents/shadycss": "^1.7.1",
+    "@webcomponents/webcomponentsjs": "^2.2.1",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
     "ts-loader": "^5.3.1",
-    "tsc": "^1.20150623.0",
-    "typescript": "^3.2.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.2",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"

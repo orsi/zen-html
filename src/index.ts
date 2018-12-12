@@ -1,4 +1,1 @@
-function test(): string {
-    return 'hi';
-}
-console.log(test());
+export * from './zen-element';
