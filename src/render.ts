@@ -12,4 +12,6 @@ export const render = function (zenTemplate: ZenTemplate, container: Node) {
         // render into container
         container.appendChild(zenRender.element);
     }
+
+    zenRender.render(zenTemplate.values);
 }
