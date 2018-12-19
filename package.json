@@ -1,6 +1,6 @@
 {
   "name": "zen-html",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "An enlightened html template library.",
   "main": "index.js",
   "module": "dist/zen-html.js",
