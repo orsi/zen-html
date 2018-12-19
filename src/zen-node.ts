@@ -1,20 +1,18 @@
-import { ZenTemplate, valueMarker } from './zen-template';
+import { valueMarker } from './zen-template';
 
-export class ZenRender {
-    zenTemplate: ZenTemplate;
-    element: HTMLElement;
-    nodes: any[] = [];
-    constructor (zenTemplate: ZenTemplate) {
-        this.zenTemplate = zenTemplate;
-        this.parse(zenTemplate);
+export class ZenNode {
+    rootNode: Node;
+    children: any[] = [];
+    constructor (node: Node) {
+        this.rootNode = node;
+        this.parse(this.rootNode);
     }
 
-    parse (zenTemplate: ZenTemplate) {
-        this.element = this.getElement();
+    parse (rootNode: Node) {
         // walk over the element and save all the nodes that have value
         // markers contained in them, and set their original values
         let valueIndex = 0;
-        const treeWalker = document.createTreeWalker(this.element, 5 /** Show elements and text */);
+        const treeWalker = document.createTreeWalker(rootNode, 5 /** Show elements and text */);
         while(treeWalker.nextNode()) {
             let currentNode = treeWalker.currentNode;
 
@@ -23,7 +21,7 @@ export class ZenRender {
                 for (let i = 0; i < currentNode.attributes.length; i++) {
                     const currentAttribute = currentNode.attributes[i];
                     if (currentAttribute.textContent.indexOf(valueMarker) > -1) {
-                        this.nodes.push({
+                        this.children.push({
                             type: 'attribute',
                             container: currentAttribute,
                             index: valueIndex,
@@ -36,7 +34,7 @@ export class ZenRender {
             } else {
                 // if it's not an element, must be in a text position
                 if (currentNode.textContent.indexOf(valueMarker) > -1) {
-                    this.nodes.push({
+                    this.children.push({
                         type: 'text',
                         index: valueIndex,
                         container: currentNode,
@@ -49,14 +47,10 @@ export class ZenRender {
         }
     }
 
-    getElement (): HTMLElement {
-        return this.zenTemplate.getTemplate().content.cloneNode(true) as HTMLElement;
-    }
-
     render (values: any[]) {
         values.forEach((value, i) => {
             // grab node saved for value and update with new value
-            const node = this.nodes[i];
+            const node = this.children[i];
             node.oldValue = node.currentValue;
             node.currentValue = value;
             switch (node.type) {
