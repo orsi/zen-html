@@ -1,4 +1,4 @@
-import { zen, ZenElement } from '/test/zen-html.js';
+import { zen, ZenElement } from './zen-html.js';
 
 const testElementTemplate = zen`<span>zen-test-element</span>`;
 class ZenTestElement extends ZenElement {

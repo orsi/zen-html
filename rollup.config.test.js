@@ -1,7 +1,7 @@
 import typescript from 'rollup-plugin-typescript';
 
 export default {
-  input: './src/index.ts',
+  input: './src/zen-html.ts',
   output: {
     file: './test/zen-html.js',
     format: 'esm',
