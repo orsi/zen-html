@@ -4,6 +4,7 @@
         "module": "es2015",
         "outDir": "dist",
         "moduleResolution": "node",
+        "declaration": true,
         "sourceMap": true
     },
     "include": [
