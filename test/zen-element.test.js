@@ -18,7 +18,7 @@ describe('zen element', function () {
     chai.expect(testCustomJsElement.shadowRoot).to.be.not.null;
   });
 
-  it('should find zen element in playground', function () {
+  it('should find zen test element in playground', function () {
     const testCustomHtmlElement = document.querySelector('zen-test-element');
     chai.expect(testCustomHtmlElement).to.exist;
   });
