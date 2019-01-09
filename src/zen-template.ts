@@ -1,5 +1,4 @@
-export const valueMarker = '%zen%';
-
+export const valueMarker = `%zen%`;
 export class ZenTemplate {
     private strings;
     private html;

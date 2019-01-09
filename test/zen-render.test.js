@@ -1,6 +1,6 @@
 import { zen, render } from './zen-html.js';
 
-describe('zen render', function () {
+describe('zen-render', function () {
     it('should render zen template into dom', function () {
       const zenTemplate = zen`<div id="rendered-element-1">Hi!</div>`;
 

@@ -1,6 +1,6 @@
 import { zen, ZenTemplate, valueMarker } from './zen-html.js';
 
-describe('zen template', function () {
+describe('zen-template', function () {
     it('should return a template class', function () {
       const zenTemplate = zen`<h1>Hi!</h1>`;
       chai.expect(zenTemplate).to.be.instanceOf(ZenTemplate);
