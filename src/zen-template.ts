@@ -1,4 +1,4 @@
-export const valueMarker = `%zen%`;
+export const dynamicMarker = `%zen%`;
 export class ZenTemplate {
     private strings;
     private html;
@@ -15,7 +15,7 @@ export class ZenTemplate {
     parse (strings: TemplateStringsArray): string {
         let html = '';
         strings.forEach((element, index) => {
-            html += element + (index < strings.length - 1 ? valueMarker : '');
+            html += element + (index < strings.length - 1 ? dynamicMarker : '');
         });
         return html;
     }

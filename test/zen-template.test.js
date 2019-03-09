@@ -1,4 +1,4 @@
-import { zen, ZenTemplate, valueMarker } from './zen-html.js';
+import { zen, ZenTemplate, dynamicMarker } from './zen-html.js';
 
 describe('zen-template', function () {
     it('should return a template class', function () {
@@ -11,13 +11,13 @@ describe('zen-template', function () {
       const className2 = 'testing-2';
       const zenTemplate = zen`<h1 class="${ className1 } ${ className2 }">Hi!</h1>`;
       const html = zenTemplate.html;
-      chai.expect((html.match(new RegExp(valueMarker, 'g')) || []).length, 'should contain 2 markers').to.equal(2);
+      chai.expect((html.match(new RegExp(dynamicMarker, 'g')) || []).length, 'should contain 2 markers').to.equal(2);
     });
 
     it('should replace content values with markers', function () {
       const message = 'Hi!';
       const zenTemplate = zen`<h1>${ message }</h1>`;
       const html = zenTemplate.html;
-      chai.expect(html, 'html should have marker').to.contain(valueMarker);
+      chai.expect(html, 'html should have marker').to.contain(dynamicMarker);
     });
   });
