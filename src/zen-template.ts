@@ -1,4 +1,4 @@
-export const dynamicMarker = `%zen%`;
+export const dynamicMarker = '❍';
 export class ZenTemplate {
     private strings;
     private html;
