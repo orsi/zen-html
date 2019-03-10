@@ -1,133 +1,155 @@
 import { dynamicMarker } from './zen-template';
 
 export class ZenNode {
-    rootNode: Node;
     children: any[] = [];
     constructor (node: Node) {
-        this.rootNode = node;
-        this.parse(this.rootNode);
+        this.parse(node);
     }
 
-    parse (rootNode: Node) {
-        // walk over the element and save all the nodes that have value
-        // markers contained in them, and set their original values
-        let valueIndex = 0;
-        const treeWalker = document.createTreeWalker(rootNode, 5 /** Show elements and text */);
-        while(treeWalker.nextNode()) {
-            let currentNode = treeWalker.currentNode;
-
-            // if element, traverse attributes
-            if (currentNode instanceof Element) {
-                for (let i = 0; i < currentNode.attributes.length; i++) {
-                    const currentAttribute = currentNode.attributes[i];
-                    if (currentAttribute.textContent.indexOf(dynamicMarker) > -1) {
-                        // text node can contain more than one marker
-                        // must save the whole string with markers and
-                        // build whole string on each value change
-                        const text = currentAttribute.textContent;
-                        const valuesCount = (text.match(new RegExp(dynamicMarker, 'gi')) || []).length;
-
-                        const attributeValue = {
-                            type: 'attribute',
-                            container: currentAttribute,
-                            template: currentAttribute.textContent,
-                            values: []
-                        };
-
-                        // for each value marker, save its index in template string
-                        for (let i = 0; i < valuesCount; i++) {
-                            attributeValue.values.push({
-                                index: valueIndex,
-                                currentValue: dynamicMarker,
-                                oldValue: null
-                            });
-                            this.children.push(attributeValue);
-                            valueIndex++;
-                        }
-                    }
-                }
-            } else {
-                // if it's not an element, must be in a text position
-                if (currentNode.textContent.indexOf(dynamicMarker) > -1) {
-                    /**
-                     * We can break the textContent string into multiple
-                     * TextNodes, so that each dynamic part is isolated and
-                     * can update by itself.
+    render (values: any[]) {
+        // values should always equal and be in the same
+        // order as this node's children
+        let dynamicValue;
+        let value;
+        for (let i = 0; i < values.length; i++) {
+            // update dynamic value and render
+            value = values[i];
+            dynamicValue = this.children[i];
+            dynamicValue.oldValue = dynamicValue.currentValue;
+            dynamicValue.currentValue = value;
+            switch (dynamicValue.type) {
+                case 'attribute':
+                    /** TODO
+                     *  Attributes should only render once, even if it
+                     *  contains multiple dynamic values. Currently this
+                     *  will render for each dynamic value.
                      */
-                    const valueMarkerIndices = [];
-                    const textParts = [];
-                    let textContent = currentNode.textContent;
-                    while (textContent !== '') {
-                        let part;
-                        const valueIndex = textContent.indexOf(dynamicMarker);
-                        if (valueIndex !== 0) {
-                            // text content before value marker
-                            part = textContent.substring(0, valueIndex);
-                            textContent = textContent.substring(valueIndex);
-                        } else {
-                            // value marker
-                            valueMarkerIndices.push(textParts.length);
-                            part = textContent.substring(0, dynamicMarker.length);
-                            textContent = textContent.substring(dynamicMarker.length);
-                        }
-                        textParts.push(document.createTextNode(part));
-                    }
+                    this.renderAttribute(dynamicValue);
+                    break;
+                case 'text':
+                    this.renderText(dynamicValue);
+                    break;
+            }
+        };
+    }
 
-                    // save the dynamic text parts
-                    for (let i = 0; i < valueMarkerIndices.length; i++) {
-                        this.children.push({
-                            type: 'text',
-                            index: valueIndex,
-                            container: textParts[valueMarkerIndices[i]],
-                            currentValue: dynamicMarker,
-                            oldValue: null
-                        });
-                        valueIndex++;
+    private parse (node: Node) {
+        // walk over the element and save all dynamic marker nodes
+        const treeWalker = document.createTreeWalker(node, 5 /** only elements and text */);
+        while(treeWalker.nextNode()) {
+            const currentNode = treeWalker.currentNode;
+            if (currentNode instanceof Element) {
+                // if element, traverse attributes
+                let currentAttribute;
+                for (let i = 0; i < currentNode.attributes.length; i++) {
+                    currentAttribute = currentNode.attributes[i];
+                    if (currentAttribute.textContent.indexOf(dynamicMarker) > -1) {
+                        this.parseAttribute(currentAttribute);
                     }
-
-                    // empty current node and replace with text nodes
-                    // ** warning: can't appendChild() or else walker
-                    // ** will keep adding and walking over nodes **
-                    const parentNode = currentNode.parentElement;
-                    for (let i = 0; i < textParts.length; i++) {
-                        parentNode.insertBefore(textParts[i], currentNode);
-                    }
-
-                    // remove current text node from parent
-                    parentNode.removeChild(currentNode);
                 }
+            } else if (currentNode.textContent.indexOf(dynamicMarker) > -1) {
+                // if it's not an element, must be in a text position
+                this.parseText(currentNode as Text);
             }
         }
     }
 
-    render (values: any[]) {
-        values.forEach((value, i) => {
-            // grab node saved for value and update with new value
-            const dynamicValue = this.children[i];
-            switch (dynamicValue.type) {
-                case 'attribute':
-                    const attribute = <Attr>dynamicValue.container;
-                    // find the attribute part that corresponds with
-                    // this value index
-                    const attributeValues = dynamicValue.values;
-                    const currentValue = attributeValues.find(val => val.index === i);
-                    currentValue.oldValue = currentValue.currentValue;
-                    currentValue.currentValue = value;
-                    // rebuild template from all current values
-                    let str = dynamicValue.template;
-                    for (let j = 0; j < attributeValues.length; j++) {
-                        str = str.replace(dynamicMarker, attributeValues[j].currentValue);
-                    }
-                    attribute.textContent = str;
-                    break;
-                case 'text':
-                    // find the attribute part that corresponds with
-                    // this value index
-                    dynamicValue.oldValue = dynamicValue.currentValue;
-                    dynamicValue.currentValue = value;
-                    dynamicValue.container.textContent = dynamicValue.currentValue;
-                    break;
+    private parseAttribute(currentAttribute: Attr) {
+        /** Attributes can contain more than one dynamic value
+         *  and cannot be updated individually, so we
+         *  have to save the original attribute string
+         *  and build the entire string from all dynamic
+         *  values contained within it when a single
+         *  value changes.
+         */
+        const textContent = currentAttribute.textContent;
+        const matches = textContent.match(new RegExp(dynamicMarker, 'g'));
+        const dynamicValuesCount = matches ? matches.length : 0;
+        const dynamicAttributeValues = [];
+        const attributeTemplate = {
+            raw: currentAttribute.textContent,
+            values: dynamicAttributeValues
+        };
+        for (let i = 0; i < dynamicValuesCount; i++) {
+            const dynamicValue = {
+                type: 'attribute',
+                position: i,
+                container: currentAttribute,
+                currentValue: dynamicMarker,
+                oldValue: null,
+                template: attributeTemplate
+            };
+            dynamicAttributeValues.push(dynamicValue); // push into attribute template
+            this.children.push(dynamicValue);
+        }
+    }
+
+    private parseText(text: Text) {
+        /**
+         * We can break the textContent string into multiple
+         * TextNodes, so that each dynamic part is isolated and
+         * can update by itself.
+         */
+        const valueMarkerIndices = [];
+        const textParts = [];
+        let textContent = text.textContent;
+        while (textContent !== '') {
+            let part;
+            const valueIndex = textContent.indexOf(dynamicMarker);
+            if (valueIndex !== 0) {
+                // text content before value marker
+                part = textContent.substring(0, valueIndex);
+                textContent = textContent.substring(valueIndex);
+            } else {
+                // value marker
+                valueMarkerIndices.push(textParts.length);
+                part = textContent.substring(0, dynamicMarker.length);
+                textContent = textContent.substring(dynamicMarker.length);
             }
-        });
+            textParts.push(document.createTextNode(part));
+        }
+
+        // save the dynamic text parts
+        for (let i = 0; i < valueMarkerIndices.length; i++) {
+            this.children.push({
+                type: 'text',
+                container: textParts[valueMarkerIndices[i]],
+                currentValue: dynamicMarker,
+                oldValue: null
+            });
+        }
+
+        // empty current node and replace with text nodes
+        // ** warning: can't appendChild() or else walker
+        // ** will keep adding and walking over nodes **
+        const parentNode = text.parentElement;
+        for (let i = 0; i < textParts.length; i++) {
+            parentNode.insertBefore(textParts[i], text);
+        }
+
+        // remove current text node from parent
+        parentNode.removeChild(text);
+    }
+
+    /**
+     * Renders a new attribute value by
+     * rebuilding the raw string and replacing
+     * each dynamic part with their current values
+     * @param dynamicValue a dynamic attribute value
+     */
+    private renderAttribute(dynamicValue) {
+        let newAttributeValue = dynamicValue.template.raw;
+        for (let j = 0; j < dynamicValue.template.values.length; j++) {
+            newAttributeValue = newAttributeValue.replace(dynamicMarker, dynamicValue.template.values[j].currentValue);
+        }
+        dynamicValue.container.textContent = newAttributeValue;
+    }
+
+    /**
+     * Renders a new text value.
+     * @param dynamicValue a dynamic text node
+     */
+    private renderText(dynamicValue) {
+        dynamicValue.container.textContent = dynamicValue.currentValue;
     }
 }

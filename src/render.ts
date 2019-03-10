@@ -6,11 +6,11 @@ export const render = function (zenTemplate: ZenTemplate, container: Node) {
     // check if zen template has been rendered and cached
     let zenRender = containerCache.get(container);
     if (!zenRender) {
-        // create zen render and cache
-        zenRender = new ZenNode(zenTemplate.getTemplate().content.cloneNode(true));
+        // create zen render, cache, and insert
+        const dynamicNode = zenTemplate.getTemplate().content.cloneNode(true);
+        zenRender = new ZenNode(dynamicNode);
         containerCache.set(container, zenRender);
-        // insert into container
-        container.appendChild(zenRender.rootNode);
+        container.appendChild(dynamicNode);
     }
     zenRender.render(zenTemplate.values);
 }
