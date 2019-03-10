@@ -1,4 +1,10 @@
-import { dynamicMarker } from './zen-template';
+import { dynamicMarker, ZenTemplate } from './zen-template';
+import { render } from './render';
+
+/**
+ * A cache of nested templates.
+ */
+export const templateCache = new WeakMap<Node, DynamicNode>();
 
 export class DynamicNode {
     values: DynamicValue[] = [];
@@ -29,7 +35,7 @@ export class DynamicNode {
                     this.renderAttribute(renderable);
                     break;
                 case 'textContent':
-                    this.renderText(renderable);
+                    this.renderTextContent(renderable);
                     break;
             }
         }
@@ -144,11 +150,40 @@ export class DynamicNode {
     }
 
     /**
-     * Renders a new text value.
+     * Renders value into a textContent area. Primitive values
+     * can be directly rendered into textContent, however, ZenTemplate
+     * values must be parsed correctly.
      * @param renderable a dynamic text node
      */
-    private renderText(renderable: RenderableArea) {
-        renderable.container.textContent = renderable.values[0].currentValue;
+    private renderTextContent(renderable: RenderableArea) {
+        // determine value
+        const value = renderable.values[0];
+        if (value.currentValue instanceof ZenTemplate) {
+            // check if this template was rendered before
+            if (value.currentValue !== value.oldValue) {
+                // this template hasn't been rendered before
+                let dynamicNode = templateCache.get(renderable.container);
+                if (!dynamicNode) {
+                    // container has not been rendered into before.
+                    // clone, parse, and insert template
+                    const template = value.currentValue.clone();
+                    dynamicNode = new DynamicNode(template);
+
+                    // create comment marker and replace text content
+                    const commentMarker = document.createComment('');
+                    renderable.container.parentElement.insertBefore(commentMarker, renderable.container);
+                    renderable.container.parentElement.insertBefore(template, renderable.container);
+                    renderable.container.parentElement.removeChild(renderable.container);
+                    renderable.container = commentMarker;
+                    // set container
+                    templateCache.set(renderable.container, dynamicNode);
+                }
+                dynamicNode.update(value.currentValue.values);
+                dynamicNode.render();
+            }
+        } else {
+            renderable.container.textContent = renderable.values[0].currentValue;
+        }
     }
 }
 
