@@ -7,7 +7,7 @@ export const render = function (zenTemplate: ZenTemplate, container: Node) {
     let zenRender = containerCache.get(container);
     if (!zenRender) {
         // create zen render, cache, and insert
-        const dynamicNode = zenTemplate.getTemplate().content.cloneNode(true);
+        const dynamicNode = zenTemplate.clone();
         zenRender = new ZenNode(dynamicNode);
         containerCache.set(container, zenRender);
         container.appendChild(dynamicNode);
