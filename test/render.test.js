@@ -7,49 +7,74 @@ function createContainer() {
 }
 
 describe('render.ts', function () {
+  let container;
+
+  beforeEach(function () {
+      container = createContainer();
+  });
+
+  afterEach(function () {
+    container.remove();
+  });
+
   it('should render zen template into dom', function () {
-    const container = createContainer();
     const zenTemplate = zen`<div id="zen-template">Hi!</div>`;
     render(zenTemplate, container);
 
     chai.expect(container.querySelector('#zen-template')).to.exist;
-    container.remove();
   });
 
-  it('should render zen template with given values', function () {
-    const container = createContainer();
+  it('should render primitives in attribute area', function () {
     const className1 = 'test-1';
     const className2 = 'test-2';
-    const message = 'Test 1';
-    const number = 123;
-    const zenTemplate = zen`<div id="rendered-element-2" class="${className1} break ${className2}">${message} - ${number}</div>`;
+    const zenTemplate = zen`<div id="rendered-element" class="${className1} break ${className2}"></div>`;
 
     render(zenTemplate, container);
 
-    const renderedElement = document.querySelector('#rendered-element-2');
+    const renderedElement = document.querySelector('#rendered-element');
     chai.expect(renderedElement.className).to.contain(`${className1} break ${className2}`);
-    chai.expect(renderedElement.textContent).to.contain(`${message} - ${number}`);
-    container.remove();
   });
 
-  it('should render zen template with updated values', function () {
-    const container = createContainer();
-    const className = 'test';
-    const message = 'Test 2';
-    const zenTemplate = zen`<div id="rendered-element-3" class="${className}">${message}</div>`;
+  it('should render primitives in text content area', function () {
+    const hi = 'Hi';
+    const testing = 'Testing';
+    const zenTemplate = zen`<div id="rendered-element">${hi}, ${testing}</div>`;
+
     render(zenTemplate, container);
 
-    const newClassName = 'new-test';
-    const newMessage = 'Hello world!';
-    const newZenTemplateValues = zen`<div id="rendered-element-3" class="${newClassName}">${newMessage}</div>`;
+    const renderedElement = document.querySelector('#rendered-element');
+    chai.expect(renderedElement.textContent).to.contain(`${hi}, ${testing}`);
+  });
+
+  it('should render zen template in text content area', function () {
+    const zenTemplate = zen`
+      <div id="rendered-element">
+        ${ zen`<div id="nested-element'></div>` }
+      </div>`;
+
+    render(zenTemplate, container);
+
+    const renderedElement = document.querySelector('#nested-element');
+    chai.expect(renderedElement).to.exist;
+  });
+
+  it('should render updated values', function () {
+    let attributeValue = 'test-class';
+    let textContent = 'Test Message';
+    const zenTemplate = zen`<div id="rendered-element" class="${attributeValue}">${textContent}</div>`;
+
+    render(zenTemplate, container);
+
+    attributeValue = 'new-test-class';
+    textContent = 'New Test Message';
+    const newZenTemplateValues = zen`<div id="rendered-element" class="${attributeValue}">${textContent}</div>`;
     // rendering into the same container should update previous element
     // since both templates share the same template string
     render(newZenTemplateValues, container);
 
     // get element out of dom and check
-    const renderedElement = document.querySelector('#rendered-element-3');
-    chai.expect(renderedElement.className).to.contain(newClassName);
-    chai.expect(renderedElement.textContent).to.contain(newMessage);
-    container.remove();
+    const renderedElement = document.querySelector('#rendered-element');
+    chai.expect(renderedElement.className).to.contain(attributeValue);
+    chai.expect(renderedElement.textContent).to.contain(textContent);
   });
 });
