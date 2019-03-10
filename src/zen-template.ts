@@ -1,6 +1,6 @@
 export const dynamicMarker = '❍';
 export class ZenTemplate {
-    html: string;
+    html: string = '';
     strings: TemplateStringsArray;
     values: any[];
     constructor(strings: TemplateStringsArray, values: any[]) {
