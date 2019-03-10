@@ -1,10 +1,10 @@
-import { ZenNode } from './zen-node';
+import { DynamicNode } from './dynamic-node';
 import { ZenTemplate } from './zen-template';
 
 /**
- * Cache previously rendered into containers.
+ * A cache of dyanmic nodes rendered into containers.
  */
-export const containerCache = new WeakMap<Node, ZenNode>();
+export const containerCache = new WeakMap<Node, DynamicNode>();
 
 /**
  * Renders a zen template into a container DOM element.
@@ -13,13 +13,15 @@ export const containerCache = new WeakMap<Node, ZenNode>();
  */
 export const render = function (zenTemplate: ZenTemplate, container: Node) {
     // check if zen template has been rendered and cached
-    let zenRender = containerCache.get(container);
-    if (!zenRender) {
-        // create zen render, cache, and insert
-        const dynamicNode = zenTemplate.clone();
-        zenRender = new ZenNode(dynamicNode);
-        containerCache.set(container, zenRender);
-        container.appendChild(dynamicNode);
+    let dynamicNode = containerCache.get(container);
+    if (!dynamicNode) {
+        // container has not been rendered into before.
+        // clone, parse, and insert template
+        const template = zenTemplate.clone();
+        dynamicNode = new DynamicNode(template);
+        container.appendChild(template);
+        containerCache.set(container, dynamicNode);
     }
-    zenRender.render(zenTemplate.values);
+    dynamicNode.update(zenTemplate.values);
+    dynamicNode.render();
 }

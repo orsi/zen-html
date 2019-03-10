@@ -33,7 +33,7 @@ export class ZenTemplate {
     /**
      * Clones an element using this template.
      */
-    clone(): Node {
-        return this.getTemplate().content.cloneNode(true);
+    clone(): HTMLElement {
+        return this.getTemplate().content.cloneNode(true) as HTMLElement;
     }
 }
