@@ -1,6 +1,9 @@
 import { ZenNode } from './zen-node';
 import { ZenTemplate } from './zen-template';
 
+/**
+ * Cache previously rendered into containers.
+ */
 export const containerCache = new WeakMap<Node, ZenNode>();
 
 /**
