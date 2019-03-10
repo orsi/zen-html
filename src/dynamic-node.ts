@@ -2,7 +2,7 @@ import { dynamicMarker } from './zen-template';
 
 export class DynamicNode {
     values: DynamicValue[] = [];
-    renderables: DynamicRenderable[] = [];
+    renderables: RenderableArea[] = [];
     constructor (node: Node) {
         this.parse(node);
     }
@@ -24,15 +24,12 @@ export class DynamicNode {
 
     render () {
         for (let renderable of this.renderables) {
-            switch (renderable.type) {
+            switch (renderable.area) {
                 case 'attribute':
                     this.renderAttribute(renderable);
                     break;
-                case 'text':
+                case 'textContent':
                     this.renderText(renderable);
-                    break;
-                case 'template':
-                    this.renderTemplate(renderable);
                     break;
             }
         }
@@ -62,13 +59,12 @@ export class DynamicNode {
                         this.values = this.values.concat(dynamicValues);
 
                         // create renderable
-                        const attributeRenderable = {
-                            type: 'attribute',
+                        this.renderables.push({
+                            area: 'attribute',
                             container: currentAttribute,
                             template: currentAttribute.textContent,
                             values: dynamicValues
-                        };
-                        this.renderables.push(attributeRenderable);
+                        });
                     }
                 }
             } else if (currentNode.textContent.indexOf(dynamicMarker) > -1) {
@@ -79,21 +75,25 @@ export class DynamicNode {
                  * TextNodes, so that each dynamic part is isolated and
                  * can update by itself.
                  */
-                const valueMarkerIndices = [];
+                const dynamicMarkerIndices = [];
                 const textParts = [];
                 let textContent = currentNode.textContent;
                 while (textContent !== '') {
                     let part;
                     const valueIndex = textContent.indexOf(dynamicMarker);
-                    if (valueIndex !== 0) {
+                    if (valueIndex > 0) {
                         // text content before value marker
                         part = textContent.substring(0, valueIndex);
                         textContent = textContent.substring(valueIndex);
-                    } else {
+                    } else if (valueIndex === 0) {
                         // value marker
-                        valueMarkerIndices.push(textParts.length);
+                        dynamicMarkerIndices.push(textParts.length);
                         part = textContent.substring(0, dynamicMarker.length);
                         textContent = textContent.substring(dynamicMarker.length);
+                    } else {
+                        // last text content after value marker
+                        part = textContent.substring(0);
+                        textContent = '';
                     }
                     textParts.push(document.createTextNode(part));
                 }
@@ -106,19 +106,21 @@ export class DynamicNode {
                     parentNode.insertBefore(textParts[i], currentNode);
                 }
 
-                // remove current text node from parent
+                // remove current node from parent now that we've
+                // replaced all text parts within it
                 parentNode.removeChild(currentNode);
 
-                // parse each new text node
-                for (let i = 0; i < valueMarkerIndices.length; i++) {
+                // create values and renderables for each
+                // dynamic value
+                for (let i = 0; i < dynamicMarkerIndices.length; i++) {
                     const dynamicValue = {
                         currentValue: dynamicMarker,
                         oldValue: null
                     };
                     this.values.push(dynamicValue);
                     this.renderables.push({
-                        type: 'text',
-                        container: textParts[valueMarkerIndices[i]],
+                        area: 'textContent',
+                        container: textParts[dynamicMarkerIndices[i]],
                         template: dynamicMarker,
                         values: [dynamicValue]
                     });
@@ -133,7 +135,7 @@ export class DynamicNode {
      * each dynamic part with their current values
      * @param renderable a dynamic attribute value
      */
-    private renderAttribute(renderable: DynamicRenderable) {
+    private renderAttribute(renderable: RenderableArea) {
         let attributeValue = renderable.template;
         for (let j = 0; j < renderable.values.length; j++) {
             attributeValue = attributeValue.replace(dynamicMarker, renderable.values[j].currentValue);
@@ -145,17 +147,8 @@ export class DynamicNode {
      * Renders a new text value.
      * @param renderable a dynamic text node
      */
-    private renderText(renderable: DynamicRenderable) {
+    private renderText(renderable: RenderableArea) {
         renderable.container.textContent = renderable.values[0].currentValue;
-    }
-
-    /**
-     * Renders a nested zen template.
-     * @param renderable a dynamic text node
-     */
-    private renderTemplate(renderable: DynamicRenderable) {
-        throw new Error('Not Implemented');
-        // renderable.container.textContent = renderable.values[0].currentValue;
     }
 }
 
@@ -163,8 +156,8 @@ interface DynamicValue {
     currentValue: any;
     oldValue: any;
 }
-interface DynamicRenderable {
-    type: string;
+interface RenderableArea {
+    area: 'textContent' | 'attribute';
     container: Node;
     template: string;
     values: DynamicValue[];
