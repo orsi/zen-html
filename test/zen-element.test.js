@@ -32,23 +32,22 @@ describe('zen-element.ts', function () {
     zenTestElement.remove();
   });
 
-  it('should have properties object', function () {
+  it('should have properties property', function () {
     const zenTestElement = document.createElement('zen-test');
     chai.expect(zenTestElement.properties).to.exist;
   });
 
-  it('should have state object', function () {
+  it('should have state property', function () {
     const zenTestElement = document.createElement('zen-test');
     chai.expect(zenTestElement.state).to.exist;
   });
 
-  it('should have attribute property', function () {
+  it('should have test property', function () {
     const zenTestElement = document.createElement('zen-test');
-    zenTestElement.setAttribute('test', 'test');
     chai.expect(zenTestElement.properties.test).to.exist;
   });
 
-  it('should have an attribute property with given value', function () {
+  it('should have test property with given value', function () {
     const zenTestElement = document.createElement('zen-test');
     zenTestElement.setAttribute('test', 'test');
     chai.expect(zenTestElement.properties.test).to.contain('test');
