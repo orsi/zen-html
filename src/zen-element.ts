@@ -7,6 +7,10 @@ export abstract class ZenElement extends HTMLElement {
         return attributes;
     }
 
+    static get styles() {
+        return {};
+    }
+
     static get properties() {
         return {};
     }

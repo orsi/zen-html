@@ -53,4 +53,19 @@ describe('zen-element.ts', function () {
     chai.expect(zenTestElement.properties.test).to.contain('test');
   });
 
+  it('should have styles property', function () {
+    const zenTestElement = document.createElement('zen-test');
+    chai.expect(zenTestElement.styles).to.exist;
+  });
+
+  it('should have styles backgroundColor property set', function () {
+    const zenTestElement = document.createElement('zen-test');
+    chai.expect(zenTestElement.styles.backgroundColor).to.contain('red');
+  });
+
+  it('should reflect styles to element style', function () {
+    const zenTestElement = document.createElement('zen-test');
+    chai.expect(zenTestElement.style.backgroundColor).to.contain('red');
+  });
+
 });
