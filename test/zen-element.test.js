@@ -1,37 +1,57 @@
-import './zen-test-element.js';
-const renderContainer = document.querySelector('#render-container');
+import './test.element.js';
 
 describe('zen-element.ts', function () {
-  it('should find custom zen-test-element in dom', function () {
-    const zenTestElement = document.createElement('zen-test-element');
-    renderContainer.appendChild(zenTestElement);
-    chai.expect(document.querySelector('zen-test-element')).to.exist;
-    zenTestElement.remove();
+  let container;
+  let i = 0;
+  beforeEach(function() {
+    container = document.createElement('div');
+    container.id = 'container-' + i++;
+    document.body.appendChild(container);
+  });
+
+  afterEach(function() {
+    container.remove();
+  });
+
+  it('should find custom zen-test element in dom', function () {
+    const zenTestElement = document.createElement('zen-test');
+    container.appendChild(zenTestElement);
+    chai.expect(document.querySelector('zen-test')).to.exist;
   });
 
   it('should have a shadow root', function () {
-    const zenTestElement = document.createElement('zen-test-element');
-    renderContainer.appendChild(zenTestElement);
-    chai.expect(document.querySelector('zen-test-element').shadowRoot).to.not.be.null;
-    zenTestElement.remove();
+    const zenTestElement = document.createElement('zen-test');
+    container.appendChild(zenTestElement);
+    chai.expect(document.querySelector('zen-test').shadowRoot).to.not.be.null;
   });
 
   it('should render html in it\'s shadow root', function () {
-    const zenTestElement = document.createElement('zen-test-element');
-    renderContainer.appendChild(zenTestElement);
-    chai.expect(document.querySelector('zen-test-element').shadowRoot.innerHTML).to.contain('<span>zen-test-element</span>');
+    const zenTestElement = document.createElement('zen-test');
+    container.appendChild(zenTestElement);
+    chai.expect(document.querySelector('zen-test').shadowRoot.innerHTML).to.contain('<span>zen-test</span>');
     zenTestElement.remove();
   });
 
-  it('should have an attribute property', function () {
-    const zenTestElement = document.createElement('zen-test-element');
-    zenTestElement.setAttribute('message', 'test');
-    chai.expect(zenTestElement.message).to.exist;
+  it('should have properties object', function () {
+    const zenTestElement = document.createElement('zen-test');
+    chai.expect(zenTestElement.properties).to.exist;
   });
 
-  it('should have an attribute property with value given', function () {
-    const zenTestElement = document.createElement('zen-test-element');
-    zenTestElement.setAttribute('message', 'test');
-    chai.expect(zenTestElement.message).to.contain('test');
+  it('should have state object', function () {
+    const zenTestElement = document.createElement('zen-test');
+    chai.expect(zenTestElement.state).to.exist;
   });
+
+  it('should have attribute property', function () {
+    const zenTestElement = document.createElement('zen-test');
+    zenTestElement.setAttribute('test', 'test');
+    chai.expect(zenTestElement.properties.test).to.exist;
+  });
+
+  it('should have an attribute property with given value', function () {
+    const zenTestElement = document.createElement('zen-test');
+    zenTestElement.setAttribute('test', 'test');
+    chai.expect(zenTestElement.properties.test).to.contain('test');
+  });
+
 });
