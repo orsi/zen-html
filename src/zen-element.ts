@@ -4,7 +4,6 @@ import { render } from './render';
 export abstract class ZenElement extends HTMLElement {
     static get observedAttributes() {
         const attributes = Object.keys(this.properties);
-        console.dir(this);
         return attributes;
     }
 
