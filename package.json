@@ -1,6 +1,6 @@
 {
   "name": "zen-html",
-  "version": "0.1.4",
+  "version": "0.3.0",
   "description": "An enlightened html template library to create custom web elements.",
   "keywords": ["virtual", "dom", "template", "literal", "html", "custom", "web", "element", "component"],
   "main": "dist/zen-html.js",
