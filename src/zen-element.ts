@@ -4,8 +4,11 @@ import { render } from './render';
 export abstract class ZenElement extends HTMLElement {
     static get observedAttributes() {
         const attributes = Object.keys(this.properties);
-        console.dir(this);
         return attributes;
+    }
+
+    static get styles(): string {
+        return ``;
     }
 
     static get properties() {
@@ -28,6 +31,20 @@ export abstract class ZenElement extends HTMLElement {
 
     connectedCallback () {
         render(this.render(), this.shadowRoot);
+
+        // apply class styles to instance
+        const ctor = this.constructor as typeof ZenElement;
+        const styles = ctor.styles;
+        if (typeof styles !== 'string') {
+            throw Error('Styles property must return a string.');
+        }
+
+        // only insert style element if user set styles
+        if (styles !== '') {
+            const styleElement = document.createElement('style');
+            styleElement.innerHTML = styles;
+            this.shadowRoot.insertBefore(styleElement, this.shadowRoot.firstChild);
+        }
     }
 
     disconnectedCallback() {}
@@ -39,13 +56,13 @@ export abstract class ZenElement extends HTMLElement {
     }
 
     private setup() {
-        // reflect constructor class properties on instance
+        // reflect class properties on instance
         const ctor = this.constructor as typeof ZenElement;
         if (!this['properties']) {
-            this['properties'] = ctor['properties'];
+            this['properties'] = ctor.properties;
         }
         if (!this['state']) {
-            this['state'] = ctor['state'];
+            this['state'] = ctor.state;
         }
     }
 
