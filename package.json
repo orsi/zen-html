@@ -2,6 +2,7 @@
   "name": "zen-html",
   "version": "0.1.4",
   "description": "An enlightened html template library.",
+  "keywords": ["virtual", "dom", "template", "literal", "html", "custom", "web", "element", "component"],
   "main": "dist/zen-html.js",
   "module": "dist/zen-html.js",
   "scripts": {
