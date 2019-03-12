@@ -28,7 +28,7 @@ describe('zen-element.ts', function () {
   it('should render html in it\'s shadow root', function () {
     const zenTestElement = document.createElement('zen-test');
     container.appendChild(zenTestElement);
-    chai.expect(document.querySelector('zen-test').shadowRoot.innerHTML).to.contain('<span>zen-test</span>');
+    chai.expect(document.querySelector('zen-test').shadowRoot.innerHTML).to.not.be.empty;
     zenTestElement.remove();
   });
 
@@ -53,19 +53,10 @@ describe('zen-element.ts', function () {
     chai.expect(zenTestElement.properties.test).to.contain('test');
   });
 
-  it('should have styles property', function () {
+  it('should contain a styles element in shadow root', function () {
     const zenTestElement = document.createElement('zen-test');
-    chai.expect(zenTestElement.styles).to.exist;
-  });
-
-  it('should have styles backgroundColor property set', function () {
-    const zenTestElement = document.createElement('zen-test');
-    chai.expect(zenTestElement.styles.backgroundColor).to.contain('red');
-  });
-
-  it('should reflect styles to element style', function () {
-    const zenTestElement = document.createElement('zen-test');
-    chai.expect(zenTestElement.style.backgroundColor).to.contain('red');
+    container.appendChild(zenTestElement);
+    chai.expect(zenTestElement.shadowRoot.querySelector('style')).to.exist;
   });
 
 });
