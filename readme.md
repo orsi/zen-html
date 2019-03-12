@@ -1,7 +1,38 @@
-ZEN HTML
-=========
-An enlightened html template library.
+# zen-HTML
 
-## Installation
+![zen-HTML](https://raw.githubusercontent.com/jorsi/zen-html/develop/docs/zen-html.svg)
+<img src="https://raw.githubusercontent.com/jorsi/zen-html/develop/docs/zen-html.svg">
 
-  `npm install zen-html`
+An enlightened html template library to create custom web elements.
+
+[![License: ISC](https://img.shields.io/badge/License-ISC-yellow.svg)](https://opensource.org/licenses/ISC)
+- - -
+
+## Example
+
+```js
+import { zen, render } from './zen-html.js';
+const zenTemplate = zen`<h1 class="zen-element">Hi!</div>`;
+render(zenTemplate, document.querySelector('#root'));
+```
+
+## Features
+
+  * ***Zero*** dependencies
+  * Probably really small if it were bundled nand minified
+  * Uses native and shadow DOM, no virtual DOM
+
+### Installation
+
+```js
+// NodeJS
+$ npm install zen-html
+```
+```js
+// ES6
+import { zen, render } from './path/to/zen-html.js';
+```
+
+## Compatibility
+
+Works in at least Chrome 72.
