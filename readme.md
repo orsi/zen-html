@@ -1,4 +1,4 @@
-<img alt="zen-HTML" width="120" src="https://github.com/jorsi/zen-html/raw/master/docs/zen-html.svg?sanitize=true">
+<img alt="zen-HTML" width="140" src="https://github.com/jorsi/zen-html/raw/master/docs/zen-html.svg?sanitize=true">
 
 An enlightened html template library to create custom web elements.
 
