@@ -1,7 +1,4 @@
-# zen-HTML
-
-![zen-HTML](https://raw.githubusercontent.com/jorsi/zen-html/develop/docs/zen-html.svg)
-<img src="https://raw.githubusercontent.com/jorsi/zen-html/develop/docs/zen-html.svg">
+<img alt="zen-HTML" width="120" src="https://github.com/jorsi/zen-html/raw/master/docs/zen-html.svg?sanitize=true">
 
 An enlightened html template library to create custom web elements.
 
