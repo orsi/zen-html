@@ -44,6 +44,7 @@ export class DynamicNode {
     private parse (node: Node) {
         // walk over the element and save all dynamic marker nodes
         const treeWalker = document.createTreeWalker(node, 5 /** only elements and text */);
+        const nodesToRemove = [];
         while(treeWalker.nextNode()) {
             const currentNode = treeWalker.currentNode;
             if (currentNode instanceof Element) {
@@ -104,7 +105,7 @@ export class DynamicNode {
                     textParts.push(document.createTextNode(part));
                 }
 
-                // empty current node and replace with text nodes
+                // insert new text nodes before current node
                 // ** warning: can't appendChild() or else walker
                 // ** will keep adding and walking over nodes **
                 const parentNode = currentNode.parentElement;
@@ -112,9 +113,8 @@ export class DynamicNode {
                     parentNode.insertBefore(textParts[i], currentNode);
                 }
 
-                // remove current node from parent now that we've
-                // replaced all text parts within it
-                parentNode.removeChild(currentNode);
+                // must clean up afterward to prevent walker from breaking
+                nodesToRemove.push(currentNode);
 
                 // create values and renderables for each
                 // dynamic value
@@ -132,6 +132,11 @@ export class DynamicNode {
                     });
                 }
             }
+        }
+
+        // clean up old nodes
+        for (let nodeToRemove of nodesToRemove) {
+            nodeToRemove.parentElement.removeChild(nodeToRemove);
         }
     }
 
