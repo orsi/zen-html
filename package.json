@@ -16,7 +16,8 @@
   "main": "dist/zen-html.js",
   "module": "dist/zen-html.js",
   "scripts": {
-    "build": "tsc",
+    "prebuild": "npm run clean",
+    "build": "rollup -c rollup.config.js",
     "clean": "rm -rf ./dist/*",
     "test:build": "rollup -c rollup.config.test.js -w",
     "test:serve": "live-server --browser=Chrome --open=./test/index.html --watch=./test",
@@ -41,6 +42,7 @@
     "live-server": "^1.2.1",
     "mocha": "^5.2.0",
     "rollup": "^0.67.4",
+    "rollup-plugin-babel-minify": "^8.0.0",
     "rollup-plugin-typescript": "^1.0.0",
     "tslib": "^1.9.3",
     "tslint": "^5.11.0",
