@@ -1,6 +1,6 @@
 {
   "name": "zen-html",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "An enlightened html template library to create custom web elements.",
   "keywords": [
     "virtual",
