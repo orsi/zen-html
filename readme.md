@@ -16,7 +16,7 @@ render(zenTemplate, document.querySelector('#root'));
 ## Features
 
   * ***Zero*** dependencies
-  * Probably really small if it were bundled nand minified
+  * *Really small*, <4kB bundled/minified
   * Uses native and shadow DOM, no virtual DOM
 
 ### Installation
