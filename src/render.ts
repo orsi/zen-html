@@ -1,5 +1,5 @@
-import { DynamicNode } from './dynamic-node';
-import { ZenTemplate } from './zen-template';
+import { DynamicNode } from "./dynamic-node.ts";
+import { ZenTemplate } from "./zen-template.ts";
 
 /**
  * A cache of dyanmic nodes rendered into containers.
@@ -12,16 +12,16 @@ export const containerCache = new WeakMap<Node, DynamicNode>();
  * @param container The DOM element to render into
  */
 export const render = function (zenTemplate: ZenTemplate, container: Node) {
-    // check if zen template has been rendered and cached
-    let dynamicNode = containerCache.get(container);
-    if (!dynamicNode) {
-        // container has not been rendered into before.
-        // clone, parse, and insert template
-        const template = zenTemplate.clone();
-        dynamicNode = new DynamicNode(template);
-        container.appendChild(template);
-        containerCache.set(container, dynamicNode);
-    }
-    dynamicNode.update(zenTemplate.values);
-    dynamicNode.render();
-}
+  // check if zen template has been rendered and cached
+  let dynamicNode = containerCache.get(container);
+  if (!dynamicNode) {
+    // container has not been rendered into before.
+    // clone, parse, and insert template
+    const template = zenTemplate.clone();
+    dynamicNode = new DynamicNode(template);
+    container.appendChild(template);
+    containerCache.set(container, dynamicNode);
+  }
+  dynamicNode.update(zenTemplate.values);
+  dynamicNode.render();
+};

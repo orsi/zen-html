@@ -1,9 +1,0 @@
-src/
-test/
-node_modules/
-.vscode/
-
-rollup.config.js
-rollup.config.test.js
-tsconfig.json
-.gitignore
